@@ -57,7 +57,7 @@ typedef struct sockaddr_in tSockAddrIn;
 #endif
 
 /*** defines for UDP *****/
-#define UDP_LISTEN_PORT 3001
+
 #define UDP_ID "SCR"
 #define UDP_DEFAULT_TIMEOUT 10000
 #define UDP_MSGLEN 1000
@@ -128,6 +128,8 @@ static float trackSensAngle[NBBOTS][19];
 static const char* botname[NBBOTS] = {"scr_server 1", "scr_server 2", "scr_server 3", "scr_server 4", "scr_server 5", "scr_server 6", "scr_server 7", "scr_server 8", "scr_server 9", "scr_server 10"};
 
 static unsigned long total_tics[NBBOTS];
+
+unsigned int UDP_LISTEN_PORT = getScrPort();
 
 /*
  * Module entry point

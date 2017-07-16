@@ -80,4 +80,6 @@ EXPORTS
 	setNoisy
 	getNoisy
 	setVersion
-	getVersion	
+	getVersion
+	setScrPort
+	getScrPort

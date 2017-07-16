@@ -106,7 +106,16 @@ init_args(int argc, char **argv, const char **raceconfig)
 		    i++;
 		    setLaptimeLimit(false);
 		    printf("Laptime limit disabled!\n");   
-		} else if(strncmp(argv[i], "-k", 2) == 0) {
+		} else if (strncmp(argv[i], "-port", 5) == 0) {
+			i++;
+			if (i < argc) {
+				unsigned int port;
+				sscanf(argv[i], "%d", &port);
+				setScrPort(port);
+				printf("UDP port set to %d.\n", port);
+				i++;
+			}
+		}else if(strncmp(argv[i], "-k", 2) == 0) {
 			i++;
 			// Keep modules in memory (for valgrind)
 			printf("Unloading modules disabled, just intended for valgrind runs.\n");

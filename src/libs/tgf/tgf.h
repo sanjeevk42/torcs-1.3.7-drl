@@ -643,6 +643,10 @@ extern bool getNoisy();
 extern void setVersion(char *version);
 extern char* getVersion();
 
+extern void setScrPort(unsigned int scrPort);
+
+extern unsigned int getScrPort();
+
 #endif /* __TGF__H__ */
 
 

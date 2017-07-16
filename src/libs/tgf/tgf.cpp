@@ -404,6 +404,8 @@ static long int _timeout = -1;
 /*version tag*/
 static char *_version;
 
+static int _scrPort = 3001;
+
 /* Helper to set and get the flags used to remove damage, time-limit and fuel consumption */
 void setDamageLimit(bool damageLimit)
 {
@@ -450,5 +452,12 @@ char* getVersion()
 {
 	return _version;
 
+}
 
+void setScrPort(unsigned int scrPort){
+	_scrPort = scrPort;
+}
+
+unsigned int getScrPort(){
+	return _scrPort;
 }
