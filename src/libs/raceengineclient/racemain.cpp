@@ -520,7 +520,7 @@ int ReRaceStop(void)
 {
 	void	*params = ReInfo->params;
 	ReInfo->_reGraphicItf.muteformenu();
-
+        if(RESTART!=1){
 	if (!strcmp(GfParmGetStr(params, ReInfo->_reRaceName, RM_ATTR_ALLOW_RESTART, RM_VAL_NO), RM_VAL_NO)) {
 		StopScrHandle = RmTriStateScreen("Race Stopped",
 					"Abandon Race", "Abort current race", AbortRaceHookInit(),
@@ -552,6 +552,7 @@ int ReRaceStop(void)
 						"Quit Game", "Quit the game", QuitHookInit());
 			}
 	}
+        }
 	return RM_ASYNC | RM_NEXT_STEP;
 }
 

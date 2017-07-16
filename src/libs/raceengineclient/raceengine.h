@@ -2,7 +2,7 @@
 
     file        : raceengine.h
     created     : Sat Nov 23 09:35:21 CET 2002
-    copyright   : (C) 2002 by Eric Espié                        
+    copyright   : (C) 2002 by Eric Espiï¿½                        
     email       : eric.espie@torcs.org   
     version     : $Id: raceengine.h,v 1.4 2004/04/05 18:25:00 olethros Exp $                                  
 
@@ -34,6 +34,7 @@ extern int  ReUpdate(void);
 extern void ReTimeMod (void *vcmd);
 
 extern tRmInfo	*ReInfo;
+extern int	RESTART;
 
 #endif /* _RACEENGINE_H_ */ 
 
