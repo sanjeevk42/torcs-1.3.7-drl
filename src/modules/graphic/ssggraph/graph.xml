@@ -84,9 +84,25 @@
 
   <section name="Display Mode">
     <section name="Player">
-      <attnum name="camera" val="0"/>
-      <attnum name="camera head list" val="0"/>
+      <attnum name="camera" val="1"/>
+      <attnum name="camera head list" val="1"/>
     </section>
   </section>
+  
+    <section name="0">
+      <attnum name="fovy-0-2" val="67.5"/>
+      <attnum name="driver board" val="0"/>
+      <attnum name="map mode" val="1"/>
+      <attstr name="current driver" val="scr_server 1"/>
+      <attnum name="camera" val="2"/>
+      <attnum name="camera head list" val="0"/>
+      <attnum name="driver counter" val="0"/>
+      <attnum name="leader board" val="0"/>
+      <attnum name="G graph" val="0"/>
+      <attnum name="debug info" val="0"/>
+    </section>
+
+  </section>
+  
 
 </params>
