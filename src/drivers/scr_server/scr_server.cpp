@@ -242,7 +242,7 @@ newrace(int index, tCarElt* car, tSituation *s)
              (struct sockaddr *) &serverAddress[index],
              sizeof(serverAddress[index])) < 0)
     {
-        std::cerr << "cannot bind socket";
+        std::cerr << "cannot bind socket, port" << UDP_LISTEN_PORT;
         exit(1);
     }
 
@@ -542,7 +542,7 @@ if (RESTARTING[index]==0)
     // Set timeout for client answer
     FD_ZERO(&readSet);
     FD_SET(listenSocket[index], &readSet);
-    timeVal.tv_sec = 1;
+    timeVal.tv_sec = 5;
     timeVal.tv_usec = UDP_TIMEOUT;
     memset(line, 0x0,1000 );
 
