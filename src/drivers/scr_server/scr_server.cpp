@@ -131,6 +131,7 @@ static unsigned long total_tics[NBBOTS];
 
 unsigned int UDP_LISTEN_PORT = getScrPort();
 
+
 /*
  * Module entry point
  */
@@ -500,6 +501,7 @@ drive(int index, tCarElt* car, tSituation *s)
     stateString += SimpleParser::stringify("wheelSpinVel", wheelSpinVel, 4);
     stateString += SimpleParser::stringify("z", car->_pos_Z  - RtTrackHeightL(&(car->_trkPos)));
 	stateString += SimpleParser::stringify("focus", focusSensorOut, 5);//ML
+
 
     char line[UDP_MSGLEN];
     sprintf(line,"%s",stateString.c_str());

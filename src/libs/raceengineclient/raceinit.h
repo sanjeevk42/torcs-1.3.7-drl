@@ -47,10 +47,10 @@ extern tModList *ReRaceModList;
 
 typedef struct shared_use_st
 {
-    uint8_t image_data[image_width*image_height*3];
-};
+	unsigned char image_data[image_width*image_height*3];
+} shared_use_st;
 
-
+extern struct shared_use_st* shared_memory;
 
 #endif /* _RACEINIT_H_ */ 
 

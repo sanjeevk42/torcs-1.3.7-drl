@@ -27,32 +27,61 @@
 #include "linuxspec.h"
 #include <raceinit.h>
 
-#include <semaphore.h>
-#include <sys/types.h>
-#include <sys/mman.h>
-#include <sys/stat.h>
-#include <fcntl.h>
+//#include <semaphore.h>
+//#include <sys/types.h>
+//#include <sys/mman.h>
+//#include <sys/stat.h>
+//#include <fcntl.h>
+#include <sys/shm.h>
 
 extern bool bKeepModules;
 
+struct shared_use_st* shared_memory = NULL;
 
-void startMemorySharing(int memid) {
-	char name[NAME_MAX];
-	sprintf(name, "/torcs%d", memid);
+//void startMemorySharing(int memid) {
+//	char name[NAME_MAX];
+//	sprintf(name, "/torcs-%d", memid);
+//
+//	int fd_shm = shm_open(name, O_RDWR | O_CREAT, 0660);
+//	if (fd_shm == -1) {
+//		fprintf(stderr, "Failed to open shared memory");
+//		exit(EXIT_FAILURE);
+//	}
+//
+//	if (ftruncate(fd_shm, sizeof(struct shared_use_st)) == -1) {
+//		fprintf(stderr, "Failed to open shared memory");
+//		exit(EXIT_FAILURE);
+//	}
+//
+//	shared_memory = (shared_use_st*) mmap(NULL, sizeof(shared_use_st),
+//			PROT_READ | PROT_WRITE, MAP_SHARED, fd_shm, 0);
+//	if (shared_memory == MAP_FAILED) {
+//		fprintf(stderr, "Failed to open shared memory");
+//		exit(EXIT_FAILURE);
+//	}
+//	printf("Started shared memory at %s\n", name);
+//
+//}
 
-	int fd_shm = shm_open(name, O_RDWR | O_CREAT, 0660);
-	if (fd_shm == -1) {
-		fprintf(stderr, "Failed to open shared memory");
+void startMemorySharingSys5(int memid) {
+	int shmid;
+	// establish memory sharing
+	shmid = shmget((key_t) memid, sizeof(struct shared_use_st),
+			0666 | IPC_CREAT);
+	if (shmid == -1) {
+		fprintf(stderr, "shmget failed\n");
 		exit(EXIT_FAILURE);
 	}
-	struct shared_use_st* shared_memory = mmap(NULL,
-			sizeof(struct shared_use_st), PROT_READ | PROT_WRITE, MAP_SHARED,
-			fd_shm, 0);
-	if (shared_memory == MAP_FAILED) {
-		fprintf(stderr, "Failed to open shared memory");
+
+	void* shm =  shmat(shmid, 0, 0);
+	if (shm == (void*) -1) {
+		fprintf(stderr, "shmat failed\n");
 		exit(EXIT_FAILURE);
 	}
-	printf("Started shared memory at %s\n", name);
+	shared_memory = (shared_use_st*) shm;
+	printf(
+			"\n********** Memory sharing started, attached at %d **********\n \n",
+			memid);
 
 }
 
@@ -199,7 +228,7 @@ main(int argc, char *argv[])
 	const char *raceconfig = "";
 
 	init_args(argc, argv, &raceconfig);
-	startMemorySharing(getScrPort());
+	startMemorySharingSys5(getScrPort());
 
 	LinuxSpecInit();			/* init specific linux functions */
 
