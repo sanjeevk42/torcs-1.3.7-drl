@@ -27,7 +27,36 @@
 #include "linuxspec.h"
 #include <raceinit.h>
 
+#include <semaphore.h>
+#include <sys/types.h>
+#include <sys/mman.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+
 extern bool bKeepModules;
+
+
+void startMemorySharing(int memid) {
+	char name[NAME_MAX];
+	sprintf(name, "/torcs%d", memid);
+
+	int fd_shm = shm_open(name, O_RDWR | O_CREAT, 0660);
+	if (fd_shm == -1) {
+		fprintf(stderr, "Failed to open shared memory");
+		exit(EXIT_FAILURE);
+	}
+	struct shared_use_st* shared_memory = mmap(NULL,
+			sizeof(struct shared_use_st), PROT_READ | PROT_WRITE, MAP_SHARED,
+			fd_shm, 0);
+	if (shared_memory == MAP_FAILED) {
+		fprintf(stderr, "Failed to open shared memory");
+		exit(EXIT_FAILURE);
+	}
+	printf("Started shared memory at %s\n", name);
+
+}
+
+
 
 static void
 init_args(int argc, char **argv, const char **raceconfig)
@@ -170,6 +199,8 @@ main(int argc, char *argv[])
 	const char *raceconfig = "";
 
 	init_args(argc, argv, &raceconfig);
+	startMemorySharing(getScrPort());
+
 	LinuxSpecInit();			/* init specific linux functions */
 
 	if(strlen(raceconfig) == 0) {
