@@ -639,19 +639,23 @@ ReRaceRules(tCarElt *car)
 	}
 }
 void updateSharedMemory(){
-	uint8_t _data[image_width * image_height * 3];
+	int image_width = ((int*)shared_memory)[0];
+	int image_height = ((int*)shared_memory)[1];
+	uint8_t* image_data = shared_memory + 8;
+	uint8_t* _data = (uint8_t *)malloc(image_height * image_width * 3 *sizeof(uint8_t));
 	glReadPixels(0, 0, image_width, image_height, GL_RGB, GL_UNSIGNED_BYTE,
 			(GLvoid*) (_data));
 	for (int h = 0; h < image_height; h++) {
 		for (int w = 0; w < image_width; w++) {
-			shared_memory->image_data[(h * image_width + w) * 3 + 2] =
+			image_data[(h * image_width + w) * 3 + 2] =
 					_data[((image_height - h - 1) * image_width + w) * 3 + 0];
-			shared_memory->image_data[(h * image_width + w) * 3 + 1] =
+			image_data[(h * image_width + w) * 3 + 1] =
 					_data[((image_height - h - 1) * image_width + w) * 3 + 1];
-			shared_memory->image_data[(h * image_width + w) * 3 + 0] =
+			image_data[(h * image_width + w) * 3 + 0] =
 					_data[((image_height - h - 1) * image_width + w) * 3 + 2];
 		}
 	}
+	free(_data);
 
 }
 

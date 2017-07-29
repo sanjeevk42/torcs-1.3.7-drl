@@ -26,6 +26,7 @@
 
 #include "linuxspec.h"
 #include <raceinit.h>
+#include <stdio.h>
 
 //#include <semaphore.h>
 //#include <sys/types.h>
@@ -36,7 +37,7 @@
 
 extern bool bKeepModules;
 
-struct shared_use_st* shared_memory = NULL;
+unsigned char* shared_memory = NULL;
 
 //void startMemorySharing(int memid) {
 //	char name[NAME_MAX];
@@ -64,24 +65,36 @@ struct shared_use_st* shared_memory = NULL;
 //}
 
 void startMemorySharingSys5(int memid) {
+	void* handle;
+	int xw, yw;
+	const int BUFSIZE = 1024;
+	char buf[BUFSIZE];
+	snprintf(buf, BUFSIZE, "%s%s", GetLocalDir(), GFSCR_CONF_FILE);
+	handle = GfParmReadFile(buf, GFPARM_RMODE_STD | GFPARM_RMODE_CREAT);
+	xw = (int) GfParmGetNum(handle, GFSCR_SECT_PROP, GFSCR_ATT_X, (char*) NULL,
+			640);
+	yw = (int) GfParmGetNum(handle, GFSCR_SECT_PROP, GFSCR_ATT_Y, (char*) NULL,
+			480);
 	int shmid;
 	// establish memory sharing
-	shmid = shmget((key_t) memid, sizeof(struct shared_use_st),
+	shmid = shmget((key_t) memid,
+			2 * sizeof(int) + xw * yw * 3 * sizeof(unsigned char),
 			0666 | IPC_CREAT);
 	if (shmid == -1) {
 		fprintf(stderr, "shmget failed\n");
 		exit(EXIT_FAILURE);
 	}
 
-	void* shm =  shmat(shmid, 0, 0);
+	void* shm = shmat(shmid, 0, 0);
 	if (shm == (void*) -1) {
 		fprintf(stderr, "shmat failed\n");
 		exit(EXIT_FAILURE);
 	}
-	shared_memory = (shared_use_st*) shm;
-	printf(
-			"\n********** Memory sharing started, attached at %d **********\n \n",
-			memid);
+	shared_memory = (unsigned char*) shm;
+	int * shared_memory_int = (int*) shared_memory;
+	shared_memory_int[0] = xw;
+	shared_memory_int[1] = yw;
+	printf("Shared memory image size (%d, %d), memid: %d\n", xw, yw, memid);
 
 }
 
