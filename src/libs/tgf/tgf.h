@@ -647,6 +647,10 @@ extern void setScrPort(unsigned int scrPort);
 
 extern unsigned int getScrPort();
 
+extern void setRobotCmdFreq(unsigned int robotCmdFreq);
+
+extern unsigned int getRobotCmdFreq();
+
 #endif /* __TGF__H__ */
 
 

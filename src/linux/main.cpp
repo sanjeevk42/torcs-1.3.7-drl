@@ -173,6 +173,15 @@ init_args(int argc, char **argv, const char **raceconfig)
 				printf("UDP port set to %d.\n", port);
 				i++;
 			}
+		}else if (strncmp(argv[i], "-cmdFreq", 8) == 0) {
+			i++;
+			if (i < argc) {
+				unsigned int cmdFreq;
+				sscanf(argv[i], "%d", &cmdFreq);
+				setRobotCmdFreq(cmdFreq);
+				printf("Robot command frequency set to %d.\n", cmdFreq);
+				i++;
+			}
 		}else if(strncmp(argv[i], "-k", 2) == 0) {
 			i++;
 			// Keep modules in memory (for valgrind)

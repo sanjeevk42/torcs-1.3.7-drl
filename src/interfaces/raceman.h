@@ -54,7 +54,7 @@ typedef int (*tfRmRunState) (struct RmInfo *);
 
 
 #define RCM_MAX_DT_SIMU		0.002 // simulation step - 500 MHz
-#define RCM_MAX_DT_ROBOTS	0.1 // robot command frequency - 10 commands per sec
+#define RCM_MAX_DT_ROBOTS	0.05 // robot command frequency - 10 commands per sec
 
 /** General info on current race */
 typedef struct {

@@ -32,6 +32,7 @@
 #include <robottools.h>
 #include <portability.h>
 #include <raceinit.h>
+#include <sys/time.h>
 
 #include "racemain.h"
 #include "racegl.h"
@@ -660,19 +661,6 @@ ReOneStep(double deltaTimeIncrement)
 	int i;
 	tRobotItf *robot;
 	tSituation *s = ReInfo->s;
-
-	if ((ReInfo->_displayMode != RM_DISP_MODE_NONE) && (ReInfo->_displayMode != RM_DISP_MODE_CONSOLE)) {
-		if (floor(s->currentTime) == -2.0) {
-			ReRaceBigMsgSet("Ready", 1.0);
-		} else if (floor(s->currentTime) == -1.0) {
-			ReRaceBigMsgSet("Set", 1.0);
-		} else if (floor(s->currentTime) == 0.0) {
-			ReRaceBigMsgSet("Go", 1.0);
-		}
-	}
-
-
-	ReInfo->_reCurTime += deltaTimeIncrement * ReInfo->_reTimeMult; /* "Real" time */
 	s->currentTime += deltaTimeIncrement; /* Simulated time */
 
 	if (s->currentTime < 0) {
@@ -684,21 +672,6 @@ ReOneStep(double deltaTimeIncrement)
 		ReInfo->_reLastTime = 0.0;
 	}
 
-	START_PROFILE("rbDrive*");
-	if ((s->currentTime - ReInfo->_reLastTime) >= RCM_MAX_DT_ROBOTS) {
-		s->deltaTime = s->currentTime - ReInfo->_reLastTime;
-		updateSharedMemory();
-		printf("Getting command from robot. Simulation time: %lf\n", s->currentTime);
-
-		for (i = 0; i < s->_ncars; i++) {
-			if ((s->cars[i]->_state & RM_CAR_STATE_NO_SIMU) == 0) {
-				robot = s->cars[i]->robot;
-				robot->rbDrive(robot->index, s->cars[i], s);
-			}
-		}
-		ReInfo->_reLastTime = s->currentTime;
-	}
-	STOP_PROFILE("rbDrive*");
 
 	START_PROFILE("_reSimItf.update*");
 	ReInfo->_reSimItf.update(s, deltaTimeIncrement, -1);
@@ -766,24 +739,36 @@ ReUpdate(void)
 	ReInfo->_refreshDisplay = 0;
 	switch (ReInfo->_displayMode) {
 		case RM_DISP_MODE_NORMAL:
-			t = GfTimeClock();
-			
-			i = 0;
-			START_PROFILE("ReOneStep*");
-//			while ((ReInfo->_reRunning && ((t - ReInfo->_reCurTime) > RCM_MAX_DT_SIMU)) && MAXSTEPS > i++) {
-				ReOneStep(RCM_MAX_DT_SIMU);
-//			}
-//			if(ReInfo->_re)
-			STOP_PROFILE("ReOneStep*");
+			{
+				START_PROFILE("ReOneStep*");
+				int noSteps = 1.0 / (getRobotCmdFreq() * RCM_MAX_DT_SIMU);
+				for (int j = 0; j < noSteps; j++) {
+					ReOneStep(RCM_MAX_DT_SIMU);
+				}
+				STOP_PROFILE("ReOneStep*");
 
-//			if (i > MAXSTEPS) {
-//				// Cannot keep up with time warp, reset time to avoid lag when running slower again
-//				ReInfo->_reCurTime = GfTimeClock();
-//			}
-//
-			GfuiDisplay();
-			ReInfo->_reGraphicItf.refresh(ReInfo->s);
-			glutPostRedisplay();	/* Callback -> reDisplay */
+				GfuiDisplay();
+				ReInfo->_reGraphicItf.refresh(ReInfo->s);
+				glutPostRedisplay(); /* Callback -> reDisplay */
+
+				updateSharedMemory();
+
+				tSituation *s = ReInfo->s;
+				tRobotItf *robot;
+				if (s->currentTime > 0.0) {
+					printf("Getting command from robot. Simulation time: %lf\n",
+							s->currentTime);
+					START_PROFILE("rbDrive*");
+					for (i = 0; i < s->_ncars; i++) {
+						if ((s->cars[i]->_state & RM_CAR_STATE_NO_SIMU) == 0) {
+							robot = s->cars[i]->robot;
+							robot->rbDrive(robot->index, s->cars[i], s);
+						}
+					}
+					STOP_PROFILE("rbDrive*");
+				}
+
+			}
 			break;
 
 		case RM_DISP_MODE_NONE:

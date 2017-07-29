@@ -83,3 +83,5 @@ EXPORTS
 	getVersion
 	setScrPort
 	getScrPort
+	setRobotCmdFreq
+	getRobotCmdFreq

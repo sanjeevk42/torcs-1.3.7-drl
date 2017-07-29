@@ -406,6 +406,8 @@ static char *_version;
 
 static int _scrPort = 3001;
 
+static unsigned int _robotCmdFreq = 20;
+
 /* Helper to set and get the flags used to remove damage, time-limit and fuel consumption */
 void setDamageLimit(bool damageLimit)
 {
@@ -460,4 +462,13 @@ void setScrPort(unsigned int scrPort){
 
 unsigned int getScrPort(){
 	return _scrPort;
+}
+
+void setRobotCmdFreq(unsigned int robotCmdFreq){
+	_robotCmdFreq = robotCmdFreq;
+
+}
+
+unsigned int getRobotCmdFreq(){
+	return _robotCmdFreq;
 }
