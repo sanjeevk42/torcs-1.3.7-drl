@@ -639,9 +639,9 @@ ReRaceRules(tCarElt *car)
 	}
 }
 void updateSharedMemory(){
-	int image_width = ((int*)shared_memory)[0];
-	int image_height = ((int*)shared_memory)[1];
-	uint8_t* image_data = shared_memory + 8;
+	int image_width = getScreenW();
+	int image_height = getScreenH();
+	uint8_t* image_data = shared_memory_info->image_data;
 	uint8_t* _data = (uint8_t *)malloc(image_height * image_width * 3 *sizeof(uint8_t));
 	glReadPixels(0, 0, image_width, image_height, GL_RGB, GL_UNSIGNED_BYTE,
 			(GLvoid*) (_data));

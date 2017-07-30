@@ -408,6 +408,9 @@ static int _scrPort = 3001;
 
 static unsigned int _robotCmdFreq = 20;
 
+static unsigned int _screenW = 640;
+static unsigned int _screenH = 480;
+
 /* Helper to set and get the flags used to remove damage, time-limit and fuel consumption */
 void setDamageLimit(bool damageLimit)
 {
@@ -471,4 +474,20 @@ void setRobotCmdFreq(unsigned int robotCmdFreq){
 
 unsigned int getRobotCmdFreq(){
 	return _robotCmdFreq;
+}
+
+void setScreenW(unsigned int screenW){
+	_screenW = screenW;
+}
+
+unsigned int getScreenW(){
+	return _screenW;
+}
+
+void setScreenH(unsigned int screenH){
+	_screenH = screenH;
+}
+
+unsigned int getScreenH(){
+	return _screenH;
 }

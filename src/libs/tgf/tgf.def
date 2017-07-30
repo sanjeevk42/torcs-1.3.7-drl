@@ -85,3 +85,7 @@ EXPORTS
 	getScrPort
 	setRobotCmdFreq
 	getRobotCmdFreq
+	setScreenW
+	getScreenW
+	setScreenH
+    getScreenH

@@ -37,7 +37,7 @@
 
 extern bool bKeepModules;
 
-unsigned char* shared_memory = NULL;
+shared_memory_info_st* shared_memory_info = NULL;
 
 //void startMemorySharing(int memid) {
 //	char name[NAME_MAX];
@@ -65,35 +65,25 @@ unsigned char* shared_memory = NULL;
 //}
 
 void startMemorySharingSys5(int memid) {
-	void* handle;
-	int xw, yw;
-	const int BUFSIZE = 1024;
-	char buf[BUFSIZE];
-	snprintf(buf, BUFSIZE, "%s%s", GetLocalDir(), GFSCR_CONF_FILE);
-	handle = GfParmReadFile(buf, GFPARM_RMODE_STD | GFPARM_RMODE_CREAT);
-	xw = (int) GfParmGetNum(handle, GFSCR_SECT_PROP, GFSCR_ATT_X, (char*) NULL,
-			640);
-	yw = (int) GfParmGetNum(handle, GFSCR_SECT_PROP, GFSCR_ATT_Y, (char*) NULL,
-			480);
+	int xw = getScreenW(), yw = getScreenH();
+	shared_memory_info = (shared_memory_info_st*)malloc(sizeof(shared_memory_info_st));
+	shared_memory_info->memid = memid;
 	int shmid;
 	// establish memory sharing
-	shmid = shmget((key_t) memid,
-			2 * sizeof(int) + xw * yw * 3 * sizeof(unsigned char),
+	shmid = shmget((key_t) memid, xw * yw * 3 * sizeof(unsigned char),
 			0666 | IPC_CREAT);
 	if (shmid == -1) {
 		fprintf(stderr, "shmget failed\n");
 		exit(EXIT_FAILURE);
 	}
-
+	shared_memory_info->shmid = shmid;
 	void* shm = shmat(shmid, 0, 0);
 	if (shm == (void*) -1) {
 		fprintf(stderr, "shmat failed\n");
 		exit(EXIT_FAILURE);
 	}
-	shared_memory = (unsigned char*) shm;
-	int * shared_memory_int = (int*) shared_memory;
-	shared_memory_int[0] = xw;
-	shared_memory_int[1] = yw;
+
+	shared_memory_info->image_data = (unsigned char*) shm;
 	printf("Shared memory image size (%d, %d), memid: %d\n", xw, yw, memid);
 
 }
@@ -193,6 +183,24 @@ init_args(int argc, char **argv, const char **raceconfig)
 				sscanf(argv[i], "%d", &cmdFreq);
 				setRobotCmdFreq(cmdFreq);
 				printf("Robot command frequency set to %d.\n", cmdFreq);
+				i++;
+			}
+		}else if (strncmp(argv[i], "-w", 2) == 0) {
+			i++;
+			if (i < argc) {
+				unsigned int screenW;
+				sscanf(argv[i], "%d", &screenW);
+				setScreenW(screenW);
+				printf("Screen width set to %d.\n", screenW);
+				i++;
+			}
+		}else if (strncmp(argv[i], "-h", 2) == 0) {
+			i++;
+			if (i < argc) {
+				unsigned int screenH;
+				sscanf(argv[i], "%d", &screenH);
+				setScreenH(screenH);
+				printf("Screen height set to %d.\n", screenH);
 				i++;
 			}
 		}else if(strncmp(argv[i], "-k", 2) == 0) {

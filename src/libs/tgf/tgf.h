@@ -651,6 +651,14 @@ extern void setRobotCmdFreq(unsigned int robotCmdFreq);
 
 extern unsigned int getRobotCmdFreq();
 
+extern void setScreenW(unsigned int screenW);
+
+extern unsigned int getScreenW();
+
+extern void setScreenH(unsigned int screenH);
+
+extern unsigned int getScreenH();
+
 #endif /* __TGF__H__ */
 
 

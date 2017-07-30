@@ -22,6 +22,24 @@
 #include <tgfclient.h>
 #include "exitmenu.h"
 #include "mainmenu.h"
+#include "raceinit.h"
+#include <sys/shm.h>
+
+void handleExit(int signal) {
+	printf("Caught signal %d, cleaning shared memory.\n", signal);
+	if (shmdt(shared_memory_info->image_data) == -1) {
+		printf("Failed to detach process from shared memory.\n");
+	} else {
+		printf("Detached process from shared memory.\n");
+	}
+	if (shmctl(shared_memory_info->shmid, IPC_RMID, NULL) == -1) {
+		printf("Failed to clean shared memory.\n");
+	} else {
+		printf("Successfully cleaned shared memory at %d.\n",
+				shared_memory_info->shmid);
+	}
+
+}
 
 static void 
 endofprog(void * /* dummy */)
@@ -30,6 +48,7 @@ endofprog(void * /* dummy */)
     PRINT_PROFILE();
 /*     glutSetKeyRepeat(GLUT_KEY_REPEAT_ON); */
     GfScrShutdown();
+	handleExit(0);
     exit(0);
 }
 

@@ -42,14 +42,16 @@ extern void ReRunRaceOnConsole(const char* raceconfig);
 
 extern tModList *ReRaceModList;
 
-//typedef unsigned char* shared_use_st
-//{
-//	int image_width;
-//	int image_height;
-//	unsigned char* image_data;
-//} shared_use_st;
+typedef struct shared_memory_info_st
+{
+	unsigned char* image_data;
+	int memid;
+	int shmid;
+} shared_memory_info_st;
 
-extern unsigned char* shared_memory;
+extern shared_memory_info_st* shared_memory_info;
+
+extern void handleExit(int signal);
 
 #endif /* _RACEINIT_H_ */ 
 
